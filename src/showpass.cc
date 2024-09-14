@@ -1,6 +1,6 @@
 #include "showpass.hh"
+#include "otppass.hh"
 
-#include <clocale>
 #include <gpgme++/context.h>
 #include <gpgme++/data.h>
 #include <gpgme++/decryptionresult.h>
@@ -8,12 +8,13 @@
 #include <gpgme++/global.h>
 #include <gpgme++/gpgmefw.h>
 #include <gpgme++/key.h>
-#include <memory>
 
 #undef None
 #include <FL/fl_ask.H>
 
 #include <iostream>
+#include <memory>
+#include <clocale>
 #include <fstream>
 #include <string>
 #include <exception>
@@ -55,6 +56,11 @@ std::string Showpass::exec(const char *file) {
 
     while ((read_bytes = out.read(buf, sizeof(buf))) > 0) {
       dec.append(buf, read_bytes);
+    }
+
+    if (dec.rfind("otpauth://", 0) == 0) {
+      Otppass o;
+      return o.exec(dec);
     }
 
     return dec;
