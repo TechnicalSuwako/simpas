@@ -1,8 +1,6 @@
 #include "base32.hh"
 #include "otppass.hh"
 
-#include <cstdio>
-#include <fstream>
 #include <gpgme++/context.h>
 #include <gpgme++/data.h>
 #include <gpgme++/decryptionresult.h>
@@ -11,16 +9,15 @@
 #include <gpgme++/gpgmefw.h>
 #include <gpgme++/key.h>
 
-#include <iostream>
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 
 #include <FL/fl_ask.H>
 
-#include <ostream>
+#include <cstdio>
+#include <cstdint>
 #include <stdexcept>
 #include <vector>
-#include <cstdint>
 #include <exception>
 
 #if defined(__APPLE)

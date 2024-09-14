@@ -2,7 +2,7 @@
 /* #include "src/delpass.hh" */
 /* #include "src/editpass.hh" */
 #include "src/genpass.hh"
-/* #include "src/initpass.hh" */
+#include "src/initpass.hh"
 #include "src/showpass.hh"
 
 #undef Status
@@ -35,7 +35,7 @@ Fl_Input *searchfield = nullptr;
 /* Delpass d; */
 /* Editpass e; */
 Genpass g;
-/* Initpass i; */
+Initpass i;
 Showpass s;
 
 const char *sofname = "simpas";
@@ -154,16 +154,28 @@ int main(int argc, char **argv) {
   g.btn = new Fl_Button(10, 640, 150, 30, "パスワードの作成");
   g.btn->callback(g.dialog_cb);
 
-  /* i.btn = new Fl_Button(10, 680, 150, 30, "パスワードの初期設定"); */
-  /* i.btn->deactivate(); */
-  /* i.btn->callback(i.dialog_cb); */
+  i.btn = new Fl_Button(10, 680, 150, 30, "パスワードの初期設定");
+#if defined(__HAIKU__)
+  std::string gpgidpath = "/config/settings/sp/.gpg-id"
+#else
+  std::string gpgidpath = std::string(getenv("HOME")) + "/.local/share/sp/.gpg-id";
+#endif
+  struct stat buf;
+  if (stat(gpgidpath.c_str(), &buf) == 0) {
+    i.btn->deactivate();
+  }
+  i.btn->callback(i.dialog_cb);
 
   std::string bothver = windowtit + " (" + std::string(basedof) + ")";
   Fl_Box *versionlabel = new Fl_Box(FL_NO_BOX, 680, 700, 100, 30, bothver.c_str());
   versionlabel->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
 
   std::vector<std::string> fpaths;
+#if defined(__HAIKU__)
+  std::string rdir = "/config/settings/sp"
+#else
   std::string rdir = std::string(getenv("HOME")) + "/.local/share/sp";
+#endif
   scandir(rdir, rdir, fpaths);
   updatelist();
 
