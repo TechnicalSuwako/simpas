@@ -8,7 +8,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Output.H>
 
-#include <iostream>
+#include <string>
 
 #include "dialog.hh"
 
@@ -16,7 +16,7 @@ class Genpass : public Dialog {
   public:
     Fl_Button *btn = nullptr;
 
-    std::string genpass(int count, bool issecure);
+    std::string exec(int count, bool issecure);
     static void dialog_cb(Fl_Widget *w, void *);
     static void generate_cb(Fl_Widget *, void *user_data);
 

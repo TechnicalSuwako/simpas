@@ -6,11 +6,10 @@
 #include <fstream>
 #include <cstdlib>
 #include <vector>
-#include <random>
 
 Genpass gen;
 
-std::string Genpass::genpass(int count, bool issecure) {
+std::string Genpass::exec(int count, bool issecure) {
   const std::string charset_risky =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const std::string charset_secure =
@@ -46,7 +45,7 @@ void Genpass::generate_cb(Fl_Widget *, void *) {
   int count = std::stoi(gen.counter->value());
   bool issecure = gen.securechk->value() > 0;
 
-  std::string password = gen.genpass(count, issecure);
+  std::string password = gen.exec(count, issecure);
   gen.res->value(password.c_str());
 }
 
