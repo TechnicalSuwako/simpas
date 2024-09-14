@@ -53,12 +53,12 @@ CFLAGS += -I/usr/X11R7/include -L/usr/X11R7/lib -I/usr/pkg/include -L/usr/pkg/li
 CFLAGS += -I/usr/X11R6/include -L/usr/X11R6/lib
 .endif
 
-LDFLAGS = -lfltk -lX11 -lgpgmepp -lgpg-error
+LDFLAGS = -lfltk -lX11 -lassuan -lgpgmepp -lgpgme -lgpg-error
 
 .if ${OS} == "openbsd"
 LDFLAGS += -lc++abi -lpthread -lm -lc\
 			 -lXcursor -lXfixes -lXext -lXft -lfontconfig -lXinerama -lXdmcp -lXau\
-			 -lz -lxcb -lXrender -lexpat -lfreetype
+			 -lz -lxcb -lXrender -lexpat -lfreetype -lc++ -lintl -liconv
 .elif ${OS} == "freebsd"
 LDFLAGS += -lcxxrt -lm -lgcc -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
 			 -lXinerama -lthr -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp\

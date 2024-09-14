@@ -10,9 +10,8 @@
 #include <gpgme++/key.h>
 #include <memory>
 
-#define None X11_None
-#include <FL/fl_ask.H>
 #undef None
+#include <FL/fl_ask.H>
 
 #include <iostream>
 #include <fstream>
@@ -34,7 +33,6 @@ std::string Showpass::exec(const char *file) {
       GpgME::Context::create(GpgME::Protocol::OpenPGP);
 
     std::ifstream gpgfile(file, std::ios::binary);
-    std::cout << file << std::endl;
     if (!gpgfile.is_open()) {
       fl_alert("指定されたファイルを開けません");
       return "";
