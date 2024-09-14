@@ -1,14 +1,18 @@
+#define None X11_None
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Select_Browser.H>
+#define Status FL_Status
 #include <FL/Fl_Text_Display.H>
+#undef Status
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
 #include <FL/Fl_Hold_Browser.H>
+#undef None
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -16,14 +20,13 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <iostream>
-#include <stdexcept>
 
 /* #include "src/addpass.hh" */
 /* #include "src/delpass.hh" */
 /* #include "src/editpass.hh" */
 #include "src/genpass.hh"
 /* #include "src/initpass.hh" */
+#include "src/showpass.hh"
 
 Fl_Select_Browser *browser = nullptr;
 Fl_Text_Display *textview = nullptr;
@@ -35,6 +38,7 @@ Fl_Input *searchfield = nullptr;
 /* Editpass e; */
 Genpass g;
 /* Initpass i; */
+Showpass s;
 
 const char *sofname = "simpas";
 const char *version = "0.1.0";
@@ -75,7 +79,7 @@ void browser_cb(Fl_Widget *w, void *) {
   if (idx == 0) return;
 
   std::string path = fullpaths[idx - 1];
-  std::string cont = readfile(path);
+  std::string cont = s.exec(path.c_str());
 
   textbuf->text(cont.c_str());
   /* d.btn->activate(); */

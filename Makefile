@@ -53,7 +53,7 @@ CFLAGS += -I/usr/X11R7/include -L/usr/X11R7/lib -I/usr/pkg/include -L/usr/pkg/li
 CFLAGS += -I/usr/X11R6/include -L/usr/X11R6/lib
 .endif
 
-LDFLAGS = -lfltk -lX11
+LDFLAGS = -lfltk -lX11 -lgpgmepp -lgpg-error
 
 .if ${OS} == "openbsd"
 LDFLAGS += -lc++abi -lpthread -lm -lc\
