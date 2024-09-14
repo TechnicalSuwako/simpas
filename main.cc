@@ -1,32 +1,30 @@
-#define None X11_None
-#include <FL/Fl.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Select_Browser.H>
-#define Status FL_Status
-#include <FL/Fl_Text_Display.H>
-#undef Status
-#include <FL/Fl_Text_Buffer.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Input.H>
-#include <FL/Fl_Secret_Input.H>
-#include <FL/Fl_Hold_Browser.H>
-#include <FL/Fl_Copy_Surface.H>
-#undef None
-
-#include <dirent.h>
-#include <sys/stat.h>
-
-#include <string>
-#include <vector>
-
 /* #include "src/addpass.hh" */
 /* #include "src/delpass.hh" */
 /* #include "src/editpass.hh" */
 #include "src/genpass.hh"
 /* #include "src/initpass.hh" */
 #include "src/showpass.hh"
+
+#undef Status
+#undef None
+#include <FL/Fl.H>
+#include <FL/Fl_Box.H>
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Select_Browser.H>
+#include <FL/Fl_Text_Display.H>
+#include <FL/Fl_Text_Buffer.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Input.H>
+#include <FL/Fl_Secret_Input.H>
+#include <FL/Fl_Hold_Browser.H>
+#include <FL/Fl_Copy_Surface.H>
+
+#include <dirent.h>
+#include <sys/stat.h>
+
+#include <string>
+#include <vector>
 
 Fl_Select_Browser *browser = nullptr;
 Fl_Text_Display *textview = nullptr;
@@ -67,7 +65,6 @@ void copy_cb(Fl_Widget *, void *) {
   const char *text = textbuf->text();
   if (text && *text) {
     Fl::copy(text, strlen(text), 1, Fl::clipboard_plain_text);
-  std::cout << "FUCK: " << text << std::endl;
   }
 }
 
