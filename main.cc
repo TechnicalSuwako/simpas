@@ -12,6 +12,7 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
 #include <FL/Fl_Hold_Browser.H>
+#include <FL/Fl_Copy_Surface.H>
 #undef None
 
 #include <dirent.h>
@@ -19,7 +20,6 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
 
 /* #include "src/addpass.hh" */
 /* #include "src/delpass.hh" */
@@ -47,16 +47,6 @@ const char *basedof = "sp-1.4.0";
 std::vector<std::string> fullpaths;
 std::vector<std::string> dispaths;
 
-std::string readfile(const std::string &path) {
-  std::ifstream file(path);
-  if (!file.is_open()) return "ファイルを開けられません。";
-
-  std::string content((std::istreambuf_iterator<char>(file)),
-                       std::istreambuf_iterator<char>());
-
-  return content;
-}
-
 void updatelist() {
   browser->clear();
   std::string searchtxt = searchfield->value();
@@ -71,6 +61,14 @@ void updatelist() {
 
 void search_cb(Fl_Widget *, void *) {
   updatelist();
+}
+
+void copy_cb(Fl_Widget *, void *) {
+  const char *text = textbuf->text();
+  if (text && *text) {
+    Fl::copy(text, strlen(text), 1, Fl::clipboard_plain_text);
+  std::cout << "FUCK: " << text << std::endl;
+  }
 }
 
 void browser_cb(Fl_Widget *w, void *) {
@@ -138,6 +136,9 @@ int main(int argc, char **argv) {
   textview->buffer(textbuf);
 
   browser->callback(browser_cb);
+
+  Fl_Button *copybtn = new Fl_Button(400, 600, 150, 30, "パスワードのコピー");
+  copybtn->callback(copy_cb);
 
   /* a.btn = new Fl_Button(10, 560, 150, 30, "パスワードの追加"); */
   /* a.btn->callback(a.dialog_cb); */
