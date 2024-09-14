@@ -33,13 +33,13 @@ CC = c++
 FILES = main.cc src/*.cc
 
 .if ${OS} == "openbsd"
-DEPS = pkg_add fltk
+DEPS = pkg_add fltk gpgme gpgme-qt gnupg pinentry
 .elif ${OS} == "netbsd"
-DEPS = pkgin install fltk
+DEPS = pkgin install fltk gpgme gpgmepp gnupg pinentry pinentry-fltk
 .elif ${OS} == "freebsd"
-DEPS = pkg install fltk
+DEPS = pkg install fltk gpgme gpgme-cpp gnupg pinentry pinentry-fltk
 .elif ${OS} == "linux"
-DEPS = xbps-install fltk fltk-devel
+DEPS = xbps-install fltk fltk-devel gpgme gpgmepp gpgmepp-devel gnupg pinentry bmake
 .endif
 
 CFLAGS = -Wall -Wextra -Wno-non-c-typedef-for-linkage -Wno-unused-parameter\
@@ -55,28 +55,27 @@ CFLAGS += -I/usr/X11R6/include -L/usr/X11R6/lib
 
 LDFLAGS = -lfltk -lX11
 
-SLIB = -lc++
 .if ${OS} == "openbsd"
-SLIB = -lc++abi -lpthread -lm -lc\
+LDFLAGS += -lc++abi -lpthread -lm -lc\
 			 -lXcursor -lXfixes -lXext -lXft -lfontconfig -lXinerama -lXdmcp -lXau\
 			 -lz -lxcb -lXrender -lexpat -lfreetype
 .elif ${OS} == "freebsd"
-SLIB = -lcxxrt -lm -lgcc -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
+LDFLAGS += -lcxxrt -lm -lgcc -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
 			 -lXinerama -lthr -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp\
 			 -lbz2 -lbrotlidec -lbrotlicommon
 .elif ${OS} == "netbsd"
-SLIB = -lstdc++ -lpthread -lm -lc -lXft -lxcb -lfontconfig -lfreetype\
+LDFLAGS += -lstdc++ -lpthread -lm -lc -lXft -lxcb -lfontconfig -lfreetype\
 			 -lXau -lXdmcp -lXcursor -lXrandr -lXext -lXrender -lXfixes -lXinerama -lX11\
 			 -lexpat -lz -lbz2 -lgcc
 .elif ${OS} == "linux"
-SLIB = -lstdc++ -lgcc -lc -lXft -lXext -lXrender -lfontconfig -lXinerama\
+LDFLAGS += -lstdc++ -lgcc -lc -lXft -lXext -lXrender -lfontconfig -lXinerama\
 			 -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp -lbz2\
 			 -lbrotlidec -lbrotlicommon
 .endif
 
 all:
 	${CC} -O3 ${CFLAGS} -o ${NAME}\
-		${FILES} -static ${LDFLAGS} ${SLIB}
+		${FILES} -static ${LDFLAGS}
 	strip ${NAME}
 
 depend:
@@ -98,7 +97,7 @@ dist:
 release:
 	mkdir -p release/bin/${VERSION}/${OS}/${ARCH}
 	${CC} -O3 ${CFLAGS} -o release/bin/${VERSION}/${OS}/${ARCH}/${NAME} ${FILES}\
-		-static ${LDFLAGS} ${SLIB}
+		-static ${LDFLAGS}
 	strip release/bin/${VERSION}/${OS}/${ARCH}/${NAME}
 
 install:

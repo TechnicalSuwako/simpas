@@ -1,5 +1,6 @@
-# sp-gui
-GUIで使ってspをコントロール出来る
+# simpas
+シンプルなパスワードマネージャー Simple Password Manager
+GUI版のsp
 
 ## インストールする方法 | Installation
 ### BSD
@@ -18,7 +19,7 @@ sudo bmake install
 
 ### Alpine Linux
 ```sh
-sudo apk add fltk fltk-dev
+sudo apk add fltk fltk-dev gpgme gpgmepp gnupg pinentry bmake
 bmake
 sudo bmake install
 ```
