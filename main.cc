@@ -44,13 +44,16 @@ const char *basedof = "sp-1.4.0";
 
 std::vector<std::string> fullpaths;
 std::vector<std::string> dispaths;
+std::vector<std::string> filterpaths;
 
 void updatelist() {
   browser->clear();
+  filterpaths.clear();
   std::string searchtxt = searchfield->value();
   for (size_t i = 0; i < dispaths.size(); ++i) {
     if (dispaths[i].find(searchtxt) != std::string::npos) {
       browser->add(dispaths[i].c_str());
+      filterpaths.push_back(fullpaths[i]);
     }
   }
   textbuf->text("");
@@ -73,7 +76,7 @@ void browser_cb(Fl_Widget *w, void *) {
   int idx = browser->value();
   if (idx == 0) return;
 
-  std::string path = fullpaths[idx - 1];
+  std::string path = filterpaths[idx - 1];
   std::string cont = s.exec(path.c_str());
 
   textbuf->text(cont.c_str());
