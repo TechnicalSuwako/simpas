@@ -31,8 +31,6 @@ std::string Common::getlang() {
 
   if (env) lang = env;
   else lang = "ja";
-  std::cout << "Env: " << env << std::endl;
-  std::cout << "Lang: " << lang << std::endl;
 
   return lang;
 }
