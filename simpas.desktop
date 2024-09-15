@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=simpas
+GenericName=Simple Password Manager
+GenericName[ja]=シンプルなパスワードマネージャー
+Exec=simpas %F
+Icon=simpas

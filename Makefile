@@ -88,10 +88,11 @@ clean:
 	rm -rf ${NAME}
 
 dist:
-	mkdir -p ${NAME}-${VERSION} release/src
+	mkdir -p ${NAME}-${VERSION} release/src release/desktop
 	cp -R LICENSE.txt Makefile README.md CHANGELOG.md\
-		main.cc ${NAME}-${VERSION}
+		main.cc src ${NAME}.desktop ${NAME}-${VERSION}
 	tar zcfv release/src/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
+	cp ${NAME}.desktop release/desktop
 	rm -rf ${NAME}-${VERSION}
 
 release:
@@ -100,12 +101,19 @@ release:
 		-static ${LDFLAGS}
 	strip release/bin/${VERSION}/${OS}/${ARCH}/${NAME}
 
+publish:
+	rsync -rtvzP release/bin/${VERSION} 192.168.0.143:/zroot/repo/bin/${NAME}
+	rsync -rtvzP release/src/* 192.168.0.143:/zroot/repo/src/${NAME}
+	rsync -rtvzP release/desktop/* 192.168.0.143:/zroot/repo/desktop
+
 install:
-	mkdir -p ${DESTDIR}${PREFIX}/bin
+	mkdir -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${PREFIX}/share/applications
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
+	cp -f ${NAME}.desktop ${DESTDIR}${PREFIX}/share/applications
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
 
 uninstall:
+	rm -f ${DESTDIR}${PREFIX}/share/applications/${NAME}.desktop
 	rm -f ${DESTDIR}${PREFIX}/bin/${NAME}
 
-.PHONY: all debug clean dist release install uninstall
+.PHONY: all debug clean dist release publish install uninstall
