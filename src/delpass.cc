@@ -1,3 +1,4 @@
+#include "common.hh"
 #include "delpass.hh"
 
 #include <FL/fl_ask.H>
@@ -30,9 +31,14 @@ std::vector<std::string> Delpass::explode(const std::string &str, char delimiter
 }
 
 int Delpass::exec(const std::string &file, bool force) {
+  std::string lang = Common::getlang();
+
   std::string homedir = getenv("HOME") ? getenv("HOME") : "";
   if (homedir.empty()) {
-    fl_alert("ホームディレクトリを受取に失敗");
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Failed to get home directory" :
+        "ホームディレクトリを受取に失敗");
+    fl_alert("%s", err.c_str());
     return -1;
   }
 
@@ -45,24 +51,38 @@ int Delpass::exec(const std::string &file, bool force) {
 
   // ファイルが既に存在するかどうか確認
   if (access(file.c_str(), F_OK) != 0) {
-    fl_alert("パスワードが存在しません");
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Password does not exist" :
+        "パスワードが存在しません");
+    fl_alert("%s", err.c_str());
     return -1;
   }
 
   // 削除を確認する
   if (!force) { // パスワードの変更の場合、確認は不要
     std::string asking =
-      "パスワード「" + file + "」を本当に削除する事が宜しいでしょうか？";
-    int confirm = fl_choice("%s", "キャンセル", "削除", nullptr, asking.c_str());
+      (lang.compare(0, 2, "en") == 0 ?
+      "パスワード「" + file + "」を本当に削除する事が宜しいでしょうか？" :
+      "Are you sure you want to delete the password '" + file + "'?");
+    int confirm = fl_choice("%s",
+      (lang.compare(0, 2, "en") == 0 ? "Cancel" : "キャンセル"),
+      (lang.compare(0, 2, "en") == 0 ? "Delete" : "削除"),
+      nullptr, asking.c_str());
 
     if (confirm == 0) {
-      fl_alert("削除しませんでした");
+      std::string err = (lang.compare(0, 2, "en") == 0 ?
+          "Not deleted" :
+          "削除しませんでした");
+      fl_alert("%s", err.c_str());
       return -1;
     }
   }
 
   if (unlink(file.c_str()) == -1) {
-    fl_alert("パスワードを削除出来ませんですた");
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Password cannot be deleted" :
+        "パスワードを削除出来ませんですた");
+    fl_alert("%s", err.c_str());
     return -1;
   }
 
@@ -95,6 +115,9 @@ int Delpass::exec(const std::string &file, bool force) {
 
   if (force) return 0;
 
-  fl_alert("パスワードを削除しました");
+  std::string msg = (lang.compare(0, 2, "en") == 0 ?
+      "The password got deleted" :
+      "パスワードを削除しました");
+  fl_alert("%s", msg.c_str());
   return 0;
 }

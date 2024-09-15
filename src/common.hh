@@ -7,7 +7,7 @@
 
 class Common {
   public:
-    // std::string getlang();
+    static std::string getlang();
     int mkdir_r(const std::string &path, mode_t mode);
 };
 

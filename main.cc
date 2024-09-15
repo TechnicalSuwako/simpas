@@ -4,6 +4,7 @@
 #include "src/genpass.hh"
 #include "src/initpass.hh"
 #include "src/showpass.hh"
+#include "src/common.hh"
 
 #undef Status
 #undef None
@@ -39,7 +40,7 @@ Initpass i;
 Showpass s;
 
 const char *sofname = "simpas";
-const char *version = "0.1.0";
+const char *version = "1.0.0";
 const char *basedof = "sp-1.4.0";
 
 std::vector<std::string> fullpaths;
@@ -148,12 +149,16 @@ void set_dark_theme() {
 }
 
 int main(int argc, char **argv) {
+  std::string lang = Common::getlang();
   std::string windowtit = std::string(sofname) + " " + version;
   Fl_Window *window = new Fl_Window(790, 740, windowtit.c_str());
 
   set_dark_theme();
 
-  searchfield = new Fl_Input(50, 10, 730, 30, "検索:");
+  searchfield = new Fl_Input(
+      (lang.compare(0, 2, "en") == 0 ? 70 : 50), 10,
+      (lang.compare(0, 2, "en") == 0 ? 710 : 730), 30,
+      (lang.compare(0, 2, "en") == 0 ? "Search:" : "検索:"));
   searchfield->callback(search_cb);
 
   browser = new Fl_Select_Browser(10, 50, 380, 500);
@@ -163,24 +168,30 @@ int main(int argc, char **argv) {
 
   browser->callback(browser_cb);
 
-  Fl_Button *copybtn = new Fl_Button(400, 600, 150, 30, "パスワードのコピー");
+  Fl_Button *copybtn = new Fl_Button(400, 600, 150, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Copy password" : "パスワードのコピー"));
   copybtn->callback(copy_cb);
 
-  /* a.btn = new Fl_Button(10, 560, 150, 30, "パスワードの追加"); */
+  /* a.btn = new Fl_Button(10, 560, 150, 30, */
+  /* (lang.compare(0, 2, "en") == 0 ? "Add password" : "パスワードの追加")); */
   /* a.btn->callback(a.dialog_cb); */
 
-  d.btn = new Fl_Button(10, 600, 150, 30, "パスワードの削除");
+  d.btn = new Fl_Button(10, 600, 150, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Delete password" : "パスワードの削除"));
   d.btn->deactivate();
   d.btn->callback(delete_cb);
 
-  /* e.btn = new Fl_Button(400, 560, 150, 30, "パスワードの編集"); */
+  /* e.btn = new Fl_Button(400, 560, 150, 30,( */
+  /* (lang.compare(0, 2, "en") == 0 ? "Edit password" : "パスワードの編集")); */
   /* e.btn->deactivate(); */
   /* e.btn->callback(e.dialog_cb); */
 
-  g.btn = new Fl_Button(10, 640, 150, 30, "パスワードの作成");
+  g.btn = new Fl_Button(10, 640, 150, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Generate password" : "パスワードの作成"));
   g.btn->callback(g.dialog_cb);
 
-  i.btn = new Fl_Button(10, 680, 150, 30, "パスワードの初期設定");
+  i.btn = new Fl_Button(10, 680, 150, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Initialize password" : "パスワードの初期設定"));
 #if defined(__HAIKU__)
   std::string gpgidpath = "/config/settings/sp/.gpg-id"
 #else

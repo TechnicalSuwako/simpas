@@ -1,3 +1,4 @@
+#include "common.hh"
 #include "showpass.hh"
 #include "otppass.hh"
 
@@ -20,13 +21,18 @@
 #include <exception>
 
 std::string Showpass::exec(const char *file) {
+  std::string lang = Common::getlang();
+
   try {
     std::setlocale(LC_ALL, "");
     GpgME::initializeLibrary();
 
     gpg_error_t err = gpg_err_init();
     if (err) {
-      fl_alert("GPGエラーの設置に失敗: %s", gpg_strerror(err));
+      std::string ero = (lang.compare(0, 2, "en") == 0 ?
+          "Failed to generate GPGME" :
+          "GPGエラーの設置に失敗");
+      fl_alert("%s: %s", ero.c_str(), gpg_strerror(err));
       return "";
     }
 
@@ -35,7 +41,10 @@ std::string Showpass::exec(const char *file) {
 
     std::ifstream gpgfile(file, std::ios::binary);
     if (!gpgfile.is_open()) {
-      fl_alert("指定されたファイルを開けません");
+      std::string ero = (lang.compare(0, 2, "en") == 0 ?
+          "Unable to open the specified file" :
+          "指定されたファイルを開けません");
+      fl_alert("%s", ero.c_str());
       return "";
     }
 
@@ -44,7 +53,10 @@ std::string Showpass::exec(const char *file) {
 
     GpgME::DecryptionResult res = ctx->decrypt(in, out);
     if (res.error()) {
-      fl_alert("復号化に失敗: %s", res.error().asString());
+      std::string ero = (lang.compare(0, 2, "en") == 0 ?
+          "Failed to decrypt" :
+          "復号化に失敗");
+      fl_alert("%s: %s", ero.c_str(), res.error().asString());
       return "";
     }
 
@@ -65,7 +77,10 @@ std::string Showpass::exec(const char *file) {
 
     return dec;
   } catch (const std::exception &e) {
-    fl_alert("%s%s", "エラー: ", e.what());
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Error" :
+        "エラー");
+    fl_alert("%s: %s", err.c_str(), e.what());
     return "";
   }
 }

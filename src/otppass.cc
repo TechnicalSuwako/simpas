@@ -1,3 +1,4 @@
+#include "common.hh"
 #include "base32.hh"
 #include "otppass.hh"
 
@@ -16,7 +17,6 @@
 
 #include <cstdio>
 #include <cstdint>
-#include <stdexcept>
 #include <vector>
 #include <exception>
 
@@ -26,12 +26,15 @@
 #endif
 
 std::vector<unsigned char> Otppass::extract_secret(const std::string &otpauth_url) {
+  std::string lang = Common::getlang();
+
   auto secret_start = otpauth_url.find("secret=");
   if (secret_start == std::string::npos) {
-    fl_alert("OTPAuth URLの中に、シークレットを見つけられませんでした");
-    throw std::runtime_error(
-      "OTPAuth URLの中に、シークレットを見つけられませんでした"
-    );
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Failed to find secret in the OTPAuth URL" :
+        "OTPAuth URLの中に、シークレットを見つけられませんでした");
+    fl_alert("%s", err.c_str());
+    return {};
   }
   secret_start += 7;
 
@@ -41,8 +44,11 @@ std::vector<unsigned char> Otppass::extract_secret(const std::string &otpauth_ur
   }
 
   if (secret_end < secret_start) {
-    fl_alert("不正なシークレットの距離");
-    throw std::runtime_error("不正なシークレットの距離");
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Incorrect secret range" :
+        "不正なシークレットの距離");
+    fl_alert("%s", err.c_str());
+    return {};
   }
 
   std::string secret_encoded =
@@ -52,8 +58,11 @@ std::vector<unsigned char> Otppass::extract_secret(const std::string &otpauth_ur
   secret_decoded = Base32::decode(secret_encoded.c_str());
 
   if (secret_decoded.empty()) {
-    fl_alert("BASE32の復号化に失敗");
-    throw std::runtime_error("BASE32の復号化に失敗");
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Failed to decrypt BASE32" :
+        "BASE32の復号化に失敗");
+    fl_alert("%s", err.c_str());
+    return {};
   }
 
   return secret_decoded;
@@ -99,6 +108,8 @@ uint32_t Otppass::generate_totp(const std::vector<unsigned char> &secret,
 }
 
 std::string Otppass::exec(std::string &secret) {
+  std::string lang = Common::getlang();
+
   try {
     std::vector<unsigned char> secret_decoded = extract_secret(secret);
 
@@ -112,7 +123,10 @@ std::string Otppass::exec(std::string &secret) {
 
     return std::string(otpres);
   } catch (const std::exception &e) {
-    fl_alert("%s%s", "エラー: ", e.what());
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Error" :
+        "エラー");
+    fl_alert("%s: %s", err.c_str(), e.what());
     return "";
   }
 }
