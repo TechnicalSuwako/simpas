@@ -1,5 +1,5 @@
 /* #include "src/addpass.hh" */
-/* #include "src/delpass.hh" */
+#include "src/delpass.hh"
 /* #include "src/editpass.hh" */
 #include "src/genpass.hh"
 #include "src/initpass.hh"
@@ -32,7 +32,7 @@ Fl_Text_Buffer *textbuf = nullptr;
 Fl_Input *searchfield = nullptr;
 
 /* Addpass a; */
-/* Delpass d; */
+Delpass d;
 /* Editpass e; */
 Genpass g;
 Initpass i;
@@ -57,10 +57,11 @@ void updatelist() {
     }
   }
   textbuf->text("");
-  /* d.btn->deactivate(); */
 }
 
 void search_cb(Fl_Widget *, void *) {
+  d.btn->deactivate();
+  /* e.btn->deactivate(); */
   updatelist();
 }
 
@@ -79,8 +80,11 @@ void browser_cb(Fl_Widget *w, void *) {
   std::string path = filterpaths[idx - 1];
   std::string cont = s.exec(path.c_str());
 
-  textbuf->text(cont.c_str());
-  /* d.btn->activate(); */
+  if (!cont.empty()) {
+    textbuf->text(cont.c_str());
+    d.btn->activate();
+    /* e.btn->activate(); */
+  }
 }
 
 void scandir(const std::string &dpath, const std::string &rpath,
@@ -115,6 +119,28 @@ void scandir(const std::string &dpath, const std::string &rpath,
   closedir(dir);
 }
 
+void delete_cb(Fl_Widget *, void *) {
+  int idx = browser->value();
+  if (idx == 0) return;
+
+  std::string path = filterpaths[idx - 1];
+  int res = d.exec(path, false);
+  if (res == 0) {
+    d.btn->deactivate();
+    /* e.btn->deactivate(); */
+    std::vector<std::string> fpaths;
+#if defined(__HAIKU__)
+    std::string rdir = "/config/settings/sp"
+#else
+    std::string rdir = std::string(getenv("HOME")) + "/.local/share/sp";
+#endif
+    fullpaths.clear();
+    dispaths.clear();
+    scandir(rdir, rdir, fpaths);
+    updatelist();
+  }
+}
+
 void set_dark_theme() {
   Fl::background(35, 32, 35);
   Fl::background2(68, 59, 68);
@@ -143,9 +169,9 @@ int main(int argc, char **argv) {
   /* a.btn = new Fl_Button(10, 560, 150, 30, "パスワードの追加"); */
   /* a.btn->callback(a.dialog_cb); */
 
-  /* d.btn = new Fl_Button(10, 600, 150, 30, "パスワードの削除"); */
-  /* d.btn->deactivate(); */
-  /* d.btn->callback(a.dialog_cb); */
+  d.btn = new Fl_Button(10, 600, 150, 30, "パスワードの削除");
+  d.btn->deactivate();
+  d.btn->callback(delete_cb);
 
   /* e.btn = new Fl_Button(400, 560, 150, 30, "パスワードの編集"); */
   /* e.btn->deactivate(); */
