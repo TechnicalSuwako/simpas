@@ -56,35 +56,3 @@ void Initpass::exec(const std::string &gpgid) {
       "初期設定に完了しました。");
   fl_alert("%s", msg.c_str());
 }
-
-void Initpass::init_cb(Fl_Widget *w, void *user_data) {
-  init.exec(init.gpgid->value());
-  // init.btn->deactivate(); // TODO: segfault
-  static_cancel_cb(w, user_data);
-}
-
-void Initpass::dialog_cb(Fl_Widget *w, void *) {
-  (void)w;
-  std::string lang = Common::getlang();
-  Fl_Window *dialog = new Fl_Window(450, 120,
-      (lang.compare(0, 2, "en") == 0 ? "Initialize password" : "パスワードの初期設定"));
-
-  init.gpgid = new Fl_Input(90, 20, 300, 30,
-      (lang.compare(0, 2, "en") == 0 ? "GPG secret key:" : "gpg秘密鍵:"));
-  dialog->add(init.gpgid);
-
-  Fl_Button *startbtn = new Fl_Button(185, 70, 80, 30,
-      (lang.compare(0, 2, "en") == 0 ? "Start" : "開始"));
-
-  startbtn->callback(init_cb, dialog);
-
-  dialog->add(startbtn);
-
-  dialog->end();
-  dialog->set_modal();
-  dialog->show();
-}
-
-void Initpass::static_cancel_cb(Fl_Widget *w, void *data) {
-  ((Initpass *)data)->cancel_cb(w, data);
-}

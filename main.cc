@@ -139,6 +139,34 @@ void delete_cb(Fl_Widget *, void *) {
   }
 }
 
+void init_cb(Fl_Widget *w, void *user_data) {
+  i.exec(i.gpgid->value());
+  i.btn->deactivate();
+  ((Initpass *)user_data)->cancel_cb(w, user_data);
+}
+
+void init_dialog_cb(Fl_Widget *w, void *) {
+  (void)w;
+  std::string lang = Common::getlang();
+  Fl_Window *dialog = new Fl_Window(450, 120,
+      (lang.compare(0, 2, "en") == 0 ? "Initialize password" : "パスワードの初期設定"));
+
+  i.gpgid = new Fl_Input(90, 20, 300, 30,
+      (lang.compare(0, 2, "en") == 0 ? "GPG secret key:" : "gpg秘密鍵:"));
+  dialog->add(i.gpgid);
+
+  Fl_Button *startbtn = new Fl_Button(185, 70, 80, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Start" : "開始"));
+
+  startbtn->callback(init_cb, dialog);
+
+  dialog->add(startbtn);
+
+  dialog->end();
+  dialog->set_modal();
+  dialog->show();
+}
+
 void set_dark_theme() {
   Fl::background(35, 32, 35);
   Fl::background2(68, 59, 68);
@@ -196,7 +224,7 @@ int main(int argc, char **argv) {
   if (stat(gpgidpath.c_str(), &buf) == 0) {
     i.btn->deactivate();
   }
-  i.btn->callback(i.dialog_cb);
+  i.btn->callback(init_dialog_cb);
 
   std::string bothver = windowtit + " (" + std::string(basedof) + ")";
   Fl_Box *versionlabel = new Fl_Box(FL_NO_BOX, 680, 700, 100, 30, bothver.c_str());
