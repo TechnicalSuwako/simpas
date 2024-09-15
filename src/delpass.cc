@@ -4,13 +4,8 @@
 #include <FL/fl_ask.H>
 
 #include <algorithm>
-#include <cstddef>
-#include <cstdlib>
-#include <string>
-#include <vector>
 
 #include <unistd.h>
-#include <dirent.h>
 
 int Delpass::cnt(const std::string &str, char delimiter) {
   return std::count(str.begin(), str.end(), delimiter);
@@ -33,20 +28,7 @@ std::vector<std::string> Delpass::explode(const std::string &str, char delimiter
 int Delpass::exec(const std::string &file, bool force) {
   std::string lang = Common::getlang();
 
-  std::string homedir = getenv("HOME") ? getenv("HOME") : "";
-  if (homedir.empty()) {
-    std::string err = (lang.compare(0, 2, "en") == 0 ?
-        "Failed to get home directory" :
-        "ホームディレクトリを受取に失敗");
-    fl_alert("%s", err.c_str());
-    return -1;
-  }
-
-#if defined(__HAIKU__)
-  std::string basedir = "/config/settings/sp/";
-#else
-  std::string basedir = "/.local/share/sp/";
-#endif
+  std::string basedir = Common::getbasedir(true);
   std::string ext = ".gpg";
 
   // ファイルが既に存在するかどうか確認
@@ -62,8 +44,8 @@ int Delpass::exec(const std::string &file, bool force) {
   if (!force) { // パスワードの変更の場合、確認は不要
     std::string asking =
       (lang.compare(0, 2, "en") == 0 ?
-      "パスワード「" + file + "」を本当に削除する事が宜しいでしょうか？" :
-      "Are you sure you want to delete the password '" + file + "'?");
+      "Are you sure you want to delete the password '" + file + "'?" :
+      "パスワード「" + file + "」を本当に削除する事が宜しいでしょうか？");
     int confirm = fl_choice("%s",
       (lang.compare(0, 2, "en") == 0 ? "Cancel" : "キャンセル"),
       (lang.compare(0, 2, "en") == 0 ? "Delete" : "削除"),
@@ -88,8 +70,7 @@ int Delpass::exec(const std::string &file, bool force) {
 
   // 空のディレクトリの場合
   std::vector<std::string> tokens = explode(file, '/');
-  std::string basepath = homedir + basedir;
-  std::string passpath = basepath + tokens[0];
+  std::string passpath = basedir + tokens[0];
 
   for (size_t i = 1; i < tokens.size(); ++i) {
     if (i == tokens.size() - 1) continue;
@@ -98,7 +79,7 @@ int Delpass::exec(const std::string &file, bool force) {
 
   for (int i = tokens.size() - 1; i >= 0; --i) {
     // ~/.local/share/sp を削除したら危険
-    if (passpath.compare(0, basedir.size(), basepath) == 0) {
+    if (passpath.compare(0, basedir.size(), basedir) == 0) {
       break;
     }
 

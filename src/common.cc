@@ -7,8 +7,26 @@
 #include <iostream>
 #include <errno.h>
 
+std::string Common::getbasedir(bool trailing) {
+  std::string homedir = std::getenv("HOME") ? std::getenv("HOME") : "";
+  if (homedir.empty()) return "";
+
+#if defined(__HAIKU__)
+  std::string basedir = "/config/settings/sp";
+  std::string slash = "/";
+#elif defined(_WIN32)
+  std::string basedir = "\\AppData\\Local\\076\\sp";
+  std::string slash = "\\";
+#else
+  std::string basedir = "/.local/share/sp";
+  std::string slash = "/";
+#endif
+
+  return trailing ? (homedir + basedir + slash) : (homedir + basedir);
+}
+
 std::string Common::getlang() {
-  const char *env = getenv("SP_LANG");
+  const char *env = std::getenv("SP_LANG");
   std::string lang;
 
   if (env) lang = env;

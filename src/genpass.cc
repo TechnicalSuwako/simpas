@@ -5,7 +5,6 @@
 #include <FL/fl_ask.H>
 
 #include <fstream>
-#include <cstdlib>
 #include <vector>
 
 Genpass gen;

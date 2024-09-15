@@ -130,11 +130,8 @@ void delete_cb(Fl_Widget *, void *) {
     d.btn->deactivate();
     /* e.btn->deactivate(); */
     std::vector<std::string> fpaths;
-#if defined(__HAIKU__)
-    std::string rdir = "/config/settings/sp"
-#else
-    std::string rdir = std::string(getenv("HOME")) + "/.local/share/sp";
-#endif
+    std::string rdir = Common::getbasedir(false);
+
     fullpaths.clear();
     dispaths.clear();
     scandir(rdir, rdir, fpaths);
@@ -192,11 +189,9 @@ int main(int argc, char **argv) {
 
   i.btn = new Fl_Button(10, 680, 150, 30,
       (lang.compare(0, 2, "en") == 0 ? "Initialize password" : "パスワードの初期設定"));
-#if defined(__HAIKU__)
-  std::string gpgidpath = "/config/settings/sp/.gpg-id"
-#else
-  std::string gpgidpath = std::string(getenv("HOME")) + "/.local/share/sp/.gpg-id";
-#endif
+
+  std::string gpgidpath = Common::getbasedir(true) + ".gpg-id";
+
   struct stat buf;
   if (stat(gpgidpath.c_str(), &buf) == 0) {
     i.btn->deactivate();
@@ -208,11 +203,7 @@ int main(int argc, char **argv) {
   versionlabel->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
 
   std::vector<std::string> fpaths;
-#if defined(__HAIKU__)
-  std::string rdir = "/config/settings/sp"
-#else
-  std::string rdir = std::string(getenv("HOME")) + "/.local/share/sp";
-#endif
+  std::string rdir = Common::getbasedir(false);
   scandir(rdir, rdir, fpaths);
   updatelist();
 

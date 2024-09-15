@@ -2,23 +2,10 @@
 #include "showpass.hh"
 #include "otppass.hh"
 
-#include <gpgme++/context.h>
-#include <gpgme++/data.h>
 #include <gpgme++/decryptionresult.h>
-#include <gpgme++/error.h>
-#include <gpgme++/global.h>
-#include <gpgme++/gpgmefw.h>
-#include <gpgme++/key.h>
 
 #undef None
 #include <FL/fl_ask.H>
-
-#include <iostream>
-#include <memory>
-#include <clocale>
-#include <fstream>
-#include <string>
-#include <exception>
 
 std::string Showpass::exec(const char *file) {
   std::string lang = Common::getlang();

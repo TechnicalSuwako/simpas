@@ -5,7 +5,6 @@
 #include <FL/fl_ask.H>
 
 #include <cerrno>
-#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -16,18 +15,11 @@ Initpass init;
 
 void Initpass::exec(const std::string &gpgid) {
   std::string lang = Common::getlang();
-  std::string homedir = getenv("HOME");
-
-#if defined(__HAIKU__)
-  std::string basedir = "/config/settings/sp/";
-#else
-  std::string basedir = "/.local/share/sp/";
-#endif
-  std::string dirpath = std::string(homedir) + basedir;
+  std::string basedir = Common::getbasedir(true);
 
   Common common;
-  if (common.mkdir_r(dirpath, 075) != 0 && errno != EEXIST) {
-    std::cout << dirpath << std::endl;
+  if (common.mkdir_r(basedir, 0755) != 0 && errno != EEXIST) {
+    std::cout << basedir << std::endl;
     std::string err = (lang.compare(0, 2, "en") == 0 ?
         "Failed to create directory." :
         "ディレクトリを作成に失敗。");
@@ -35,7 +27,7 @@ void Initpass::exec(const std::string &gpgid) {
     return;
   }
 
-  std::string gpgidpath = dirpath + "/.gpg-id";
+  std::string gpgidpath = basedir + "/.gpg-id";
 
   struct stat statbuf;
   if (stat(gpgidpath.c_str(), &statbuf) == 0) {

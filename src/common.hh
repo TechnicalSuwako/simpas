@@ -7,6 +7,7 @@
 
 class Common {
   public:
+    static std::string getbasedir(bool trailing);
     static std::string getlang();
     int mkdir_r(const std::string &path, mode_t mode);
 };
