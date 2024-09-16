@@ -1,4 +1,4 @@
-/* #include "src/addpass.hh" */
+#include "src/addpass.hh"
 #include "src/delpass.hh"
 /* #include "src/editpass.hh" */
 #include "src/genpass.hh"
@@ -32,7 +32,7 @@ Fl_Text_Display *textview = nullptr;
 Fl_Text_Buffer *textbuf = nullptr;
 Fl_Input *searchfield = nullptr;
 
-/* Addpass a; */
+Addpass a;
 Delpass d;
 /* Editpass e; */
 Genpass g;
@@ -197,9 +197,9 @@ int main(int argc, char **argv) {
       (lang.compare(0, 2, "en") == 0 ? "Copy password" : "パスワードのコピー"));
   copybtn->callback(copy_cb);
 
-  /* a.btn = new Fl_Button(10, 560, 150, 30, */
-  /* (lang.compare(0, 2, "en") == 0 ? "Add password" : "パスワードの追加")); */
-  /* a.btn->callback(a.dialog_cb); */
+  a.btn = new Fl_Button(10, 560, 150, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Add password" : "パスワードの追加"));
+  a.btn->callback(a.dialog_cb);
 
   d.btn = new Fl_Button(10, 600, 150, 30,
       (lang.compare(0, 2, "en") == 0 ? "Delete password" : "パスワードの削除"));
@@ -216,7 +216,9 @@ int main(int argc, char **argv) {
   g.btn->callback(g.dialog_cb);
 
   i.btn = new Fl_Button(10, 680, 150, 30,
-      (lang.compare(0, 2, "en") == 0 ? "Initialize password" : "パスワードの初期設定"));
+      (lang.compare(0, 2, "en") == 0 ?
+       "Initialize password" :
+       "パスワードの初期設定"));
 
   std::string gpgidpath = Common::getbasedir(true) + ".gpg-id";
 
@@ -227,7 +229,7 @@ int main(int argc, char **argv) {
   i.btn->callback(init_dialog_cb);
 
   std::string bothver = windowtit + " (" + std::string(basedof) + ")";
-  Fl_Box *versionlabel = new Fl_Box(FL_NO_BOX, 680, 700, 100, 30, bothver.c_str());
+  Fl_Box *versionlabel = new Fl_Box(FL_NO_BOX, 620, 700, 160, 30, bothver.c_str());
   versionlabel->align(FL_ALIGN_RIGHT | FL_ALIGN_INSIDE);
 
   std::vector<std::string> fpaths;
