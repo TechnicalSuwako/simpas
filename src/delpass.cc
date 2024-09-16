@@ -25,7 +25,7 @@ std::vector<std::string> Delpass::explode(const std::string &str, char delimiter
   return tokens;
 }
 
-int Delpass::exec(const std::string &file, bool force) {
+bool Delpass::exec(const std::string &file, bool force) {
   std::string lang = Common::getlang();
 
   std::string basedir = Common::getbasedir(true);
@@ -37,7 +37,7 @@ int Delpass::exec(const std::string &file, bool force) {
         "Password does not exist" :
         "パスワードが存在しません");
     fl_alert("%s", err.c_str());
-    return -1;
+    return false;
   }
 
   // 削除を確認する
@@ -56,7 +56,7 @@ int Delpass::exec(const std::string &file, bool force) {
           "Not deleted" :
           "削除しませんでした");
       fl_alert("%s", err.c_str());
-      return -1;
+      return false;
     }
   }
 
@@ -65,7 +65,7 @@ int Delpass::exec(const std::string &file, bool force) {
         "Password cannot be deleted" :
         "パスワードを削除出来ませんですた");
     fl_alert("%s", err.c_str());
-    return -1;
+    return false;
   }
 
   // 空のディレクトリの場合
@@ -94,11 +94,11 @@ int Delpass::exec(const std::string &file, bool force) {
     }
   }
 
-  if (force) return 0;
+  if (force) return true;
 
   std::string msg = (lang.compare(0, 2, "en") == 0 ?
       "The password got deleted" :
       "パスワードを削除しました");
   fl_alert("%s", msg.c_str());
-  return 0;
+  return true;
 }

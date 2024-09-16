@@ -11,7 +11,7 @@ class Delpass : public Dialog {
   public:
     Fl_Button *btn = nullptr;
 
-    int exec(const std::string &file, bool force);
+    bool exec(const std::string &file, bool force);
 
   private:
     int cnt(const std::string &str, char delimiter);
