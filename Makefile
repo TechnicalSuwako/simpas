@@ -60,9 +60,10 @@ LDFLAGS += -lc++abi -lpthread -lm -lc\
 			 -lXcursor -lXfixes -lXext -lXft -lfontconfig -lXinerama -lXdmcp -lXau\
 			 -lz -lxcb -lXrender -lexpat -lfreetype -lc++ -lintl -liconv
 .elif ${OS} == "freebsd"
-LDFLAGS += -lcxxrt -lm -lgcc -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
+LDFLAGS += -lcxxrt -lm -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
 			 -lXinerama -lthr -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp\
-			 -lbz2 -lbrotlidec -lbrotlicommon
+			 -lbz2 -lbrotlidec -lbrotlicommon -lc++ -lgcc -lc -lgpgme -lassuan\
+			 -lintl -lpng16
 .elif ${OS} == "netbsd"
 LDFLAGS += -lstdc++ -lpthread -lm -lc -lXft -lxcb -lfontconfig -lfreetype\
 			 -lXau -lXdmcp -lXcursor -lXrandr -lXext -lXrender -lXfixes -lXinerama -lX11\
