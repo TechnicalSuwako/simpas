@@ -11,7 +11,7 @@ class Otppass {
 
   private:
     std::vector<unsigned char> extract_secret(const std::string &otpauth_url);
-#if defined(__HAIKU__)
+#if defined(__HAIKU__) || defined(__linux)
     uint64_t htobe64(uint64_t counter);
 #endif
     uint32_t generate_totp(const std::vector<unsigned char> &secret,
