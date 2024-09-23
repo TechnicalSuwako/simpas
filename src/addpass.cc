@@ -17,6 +17,7 @@ struct InputData {
   Fl_Input *txtin;
   Fl_Secret_Input *pass1;
   Fl_Secret_Input *pass2;
+  Fl_Window *dialog;
 };
 
 bool Addpass::exec(const std::string &file, const std::string &pass, bool isEdit) {
@@ -234,7 +235,9 @@ void Addpass::add_cb(Fl_Widget *, void *data) {
       return;
     }
 
-    exec(file, inputpass1, false);
+    if (exec(file, inputpass1, false)) {
+      inputs->dialog->hide();
+    }
   } else {
     std::string err =
       (lang.compare(0, 2, "en") == 0 ?
@@ -265,6 +268,7 @@ void Addpass::dialog_cb(Fl_Widget *w, void *) {
   inputs->txtin = txtin;
   inputs->pass1 = pass1;
   inputs->pass2 = pass2;
+  inputs->dialog = dialog;
 
   Fl_Button *okbtn = new Fl_Button(60, 150, 80, 30, "OK");
   Fl_Button *cancelbtn = new Fl_Button(160, 150, 80, 30,

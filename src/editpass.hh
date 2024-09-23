@@ -5,7 +5,6 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
 
-#include "common.hh"
 #include "dialog.hh"
 
 #include <string>

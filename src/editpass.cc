@@ -14,6 +14,7 @@ struct InputData {
   Fl_Input *txtin;
   Fl_Secret_Input *pass1;
   Fl_Secret_Input *pass2;
+  Fl_Window *dialog;
 };
 
 void Editpass::setFile(std::string &f) {
@@ -100,7 +101,9 @@ void Editpass::edit_cb(Fl_Widget *, void *data) {
       return;
     }
 
-    exec(file, inputpass1);
+    if (exec(file, inputpass1)) {
+      inputs->dialog->hide();
+    }
   } else {
     std::string err =
       (lang.compare(0, 2, "en") == 0 ?
@@ -132,6 +135,7 @@ void Editpass::dialog_cb(Fl_Widget *w, void *data) {
   inputs->txtin = txtin;
   inputs->pass1 = pass1;
   inputs->pass2 = pass2;
+  inputs->dialog = dialog;
 
   Fl_Button *okbtn = new Fl_Button(60, 110, 80, 30, "OK");
   Fl_Button *cancelbtn = new Fl_Button(160, 110, 80, 30,
