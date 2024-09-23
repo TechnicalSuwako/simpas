@@ -43,6 +43,7 @@ DEPS = xbps-install fltk fltk-devel gpgme gpgmepp gpgmepp-devel gnupg pinentry b
 .endif
 
 CFLAGS = -Wall -Wextra -Wno-non-c-typedef-for-linkage -Wno-unused-parameter\
+				 -Wno-cast-function-type\
 				 -I/usr/include -L/usr/lib
 .if ${OS} == "freebsd" || ${OS} == "openbsd" || ${OS} == "netbsd" || ${OS} == "dragonfly
 CFLAGS += -I/usr/local/include -L/usr/local/lib
@@ -67,7 +68,7 @@ LDFLAGS += -lcxxrt -lm -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
 .elif ${OS} == "netbsd"
 LDFLAGS += -lstdc++ -lpthread -lm -lc -lXft -lxcb -lfontconfig -lfreetype\
 			 -lXau -lXdmcp -lXcursor -lXrandr -lXext -lXrender -lXfixes -lXinerama -lX11\
-			 -lexpat -lz -lbz2 -lgcc
+			 -lexpat -lz -lbz2 -lgcc -lassuan -lintl
 .elif ${OS} == "linux"
 LDFLAGS += -lstdc++ -lgcc -lc -lXft -lXext -lXrender -lfontconfig -lXinerama\
 			 -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp -lbz2\
