@@ -5,6 +5,7 @@
 #include "src/initpass.hh"
 #include "src/showpass.hh"
 #include "src/common.hh"
+#include "main.hh"
 
 #undef Status
 #undef None
@@ -40,12 +41,40 @@ Initpass i;
 Showpass s;
 
 const char *sofname = "simpas";
+const char *intname = "SimPas";
 const char *version = "1.0.0";
 const char *basedof = "sp-1.4.0";
 
 std::vector<std::string> fullpaths;
 std::vector<std::string> dispaths;
 std::vector<std::string> filterpaths;
+int browseId;
+
+void browse(std::string &path, bool isNew) {
+  std::string cont = s.exec(path.c_str());
+  if (isNew) browseId = browser->size();
+  browser->value(browseId);
+
+  if (!cont.empty()) {
+    textbuf->text(cont.c_str());
+    Editpass::setFile(path);
+    Delpass::setFile(path);
+    d.btn->activate();
+    e.btn->activate();
+  }
+}
+
+void clearpaths(bool isReset, std::string &path) {
+  fullpaths.clear();
+  dispaths.clear();
+  if (isReset) {
+    std::string mockpath = "";
+    Editpass::setFile(mockpath);
+    Delpass::setFile(mockpath);
+    d.btn->deactivate();
+    e.btn->deactivate();
+  }
+}
 
 void updatelist() {
   browser->clear();
@@ -61,6 +90,9 @@ void updatelist() {
 }
 
 void search_cb(Fl_Widget *, void *) {
+  std::string mockpath = "";
+  Editpass::setFile(mockpath);
+  Delpass::setFile(mockpath);
   d.btn->deactivate();
   e.btn->deactivate();
   updatelist();
@@ -77,16 +109,10 @@ void browser_cb(Fl_Widget *w, void *) {
   (void)w;
   int idx = browser->value();
   if (idx == 0) return;
+  browseId = idx;
 
   std::string path = filterpaths[idx - 1];
-  std::string cont = s.exec(path.c_str());
-
-  if (!cont.empty()) {
-    textbuf->text(cont.c_str());
-    Editpass::setFile(path);
-    d.btn->activate();
-    e.btn->activate();
-  }
+  browse(path, false);
 }
 
 void scandir(const std::string &dpath, const std::string &rpath,
@@ -97,7 +123,7 @@ void scandir(const std::string &dpath, const std::string &rpath,
   struct dirent *entry;
   while ((entry = readdir(dir)) != nullptr) {
     std::string name = entry->d_name;
-    if (name == "." || name == "..") continue;
+    if (name == "." || name == ".." || name == ".gpg-id") continue;
 
     std::string fpath = std::string(dpath) + "/" + name;
     struct stat s;
@@ -119,25 +145,6 @@ void scandir(const std::string &dpath, const std::string &rpath,
   }
 
   closedir(dir);
-}
-
-void delete_cb(Fl_Widget *, void *) {
-  int idx = browser->value();
-  if (idx == 0) return;
-
-  std::string path = filterpaths[idx - 1];
-  int res = d.exec(path, false);
-  if (res == 0) {
-    d.btn->deactivate();
-    e.btn->deactivate();
-    std::vector<std::string> fpaths;
-    std::string rdir = Common::getbasedir(false);
-
-    fullpaths.clear();
-    dispaths.clear();
-    scandir(rdir, rdir, fpaths);
-    updatelist();
-  }
 }
 
 void init_cb(Fl_Widget *w, void *data) {
@@ -177,7 +184,7 @@ void set_dark_theme() {
 
 int main(int argc, char **argv) {
   std::string lang = Common::getlang();
-  std::string windowtit = std::string(sofname) + " " + version;
+  std::string windowtit = std::string(intname) + " " + version;
   Fl_Window *window = new Fl_Window(790, 740, windowtit.c_str());
 
   set_dark_theme();
@@ -206,7 +213,7 @@ int main(int argc, char **argv) {
   d.btn = new Fl_Button(10, 600, 150, 30,
       (lang.compare(0, 2, "en") == 0 ? "Delete password" : "パスワードの削除"));
   d.btn->deactivate();
-  d.btn->callback(delete_cb);
+  d.btn->callback(d.dialog_cb);
 
   e.btn = new Fl_Button(400, 560, 150, 30,
     (lang.compare(0, 2, "en") == 0 ? "Edit password" : "パスワードの編集"));

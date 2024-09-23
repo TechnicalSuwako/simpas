@@ -2,11 +2,14 @@
 #include "editpass.hh"
 #include "delpass.hh"
 #include "addpass.hh"
+#include "../main.hh"
 
 #include <FL/Fl_Window.H>
 #include <FL/fl_ask.H>
 
+#include <string>
 #include <unistd.h>
+#include <vector>
 
 Editpass edit;
 
@@ -46,6 +49,21 @@ bool Editpass::exec(const std::string &file, const std::string &pass) {
     std::string err =
       (lang.compare(0, 2, "en") == 0 ? "Failed to edit." : "編集に失敗。");
     fl_alert("%s", err.c_str());
+    // TODO: うまく動いているかの確認。それは次のバージョンから・・・
+    /* std::vector<std::string> tokens = Common::explode(file, '/'); */
+    /* std::string passpath = tokens[0]; */
+
+    /* for (size_t i = 1; i < tokens.size(); ++i) { */
+    /*   if (i == tokens.size() - 1) continue; */
+    /*   passpath += "/" + tokens[i]; */
+    /* } */
+
+    /* for (int i = tokens.size() - 1; i >= 0; ++i) { */
+    /*   if (c.mkdir_r(passpath, 0755) == -1) break; */
+
+    /*   size_t last_slash = passpath.find_last_of('/'); */
+    /*   if (last_slash != std::string::npos) passpath.erase(last_slash); */
+    /* } */
     c.tmpcopy("/tmp/simpas-tmp.gpg", file);
     unlink("/tmp/simpas-tmp.gpg");
     return false;
@@ -157,6 +175,13 @@ void Editpass::static_ok_cb(Fl_Widget *w, void *data) {
   InputData *inputs = (InputData *)data;
 
   edit.edit_cb(nullptr, inputs);
+  std::vector<std::string> fpaths;
+  std::string rdir = Common::getbasedir(false);
+  std::string curpath = inputs->txtin->value();
+  clearpaths(false, curpath);
+  scandir(rdir, rdir, fpaths);
+  updatelist();
+  browse(curpath, false);
 }
 
 void Editpass::static_cancel_cb(Fl_Widget *w, void *data) {

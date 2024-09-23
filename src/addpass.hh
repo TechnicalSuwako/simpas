@@ -16,8 +16,8 @@ class Addpass : public Dialog {
     std::string inputpass1;
     std::string inputpass2;
 
-    void add_cb(Fl_Widget *, void *);
     static void dialog_cb(Fl_Widget *w, void *);
+    void add_cb(Fl_Widget *, void *);
     bool exec(const std::string &file, const std::string &pass, bool isEdit);
 
   private:

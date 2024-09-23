@@ -1,28 +1,25 @@
 #include "common.hh"
 #include "delpass.hh"
+#include "../main.hh"
 
 #include <FL/fl_ask.H>
-
-#include <algorithm>
+#include <FL/Fl_Input.H>
 
 #include <unistd.h>
 
-int Delpass::cnt(const std::string &str, char delimiter) {
-  return std::count(str.begin(), str.end(), delimiter);
+Delpass del;
+
+struct InputData {
+  Fl_Input *txtin;
+  Fl_Window *dialog;
+};
+
+void Delpass::setFile(std::string &f) {
+  del.file = f;
 }
 
-std::vector<std::string> Delpass::explode(const std::string &str, char delimiter) {
-  std::vector<std::string> tokens;
-  std::string token;
-  size_t start = 0, end = 0;
-
-  while ((end = str.find(delimiter, start)) != std::string::npos) {
-    tokens.push_back(str.substr(start, end - start));
-    start = end + 1;
-  }
-  tokens.push_back(str.substr(start));
-
-  return tokens;
+std::string Delpass::getFile() {
+  return file;
 }
 
 bool Delpass::exec(const std::string &file, bool force) {
@@ -40,26 +37,6 @@ bool Delpass::exec(const std::string &file, bool force) {
     return false;
   }
 
-  // 削除を確認する
-  if (!force) { // パスワードの変更の場合、確認は不要
-    std::string asking =
-      (lang.compare(0, 2, "en") == 0 ?
-      "Are you sure you want to delete the password '" + file + "'?" :
-      "パスワード「" + file + "」を本当に削除する事が宜しいでしょうか？");
-    int confirm = fl_choice("%s",
-      (lang.compare(0, 2, "en") == 0 ? "Cancel" : "キャンセル"),
-      (lang.compare(0, 2, "en") == 0 ? "Delete" : "削除"),
-      nullptr, asking.c_str());
-
-    if (confirm == 0) {
-      std::string err = (lang.compare(0, 2, "en") == 0 ?
-          "Not deleted" :
-          "削除しませんでした");
-      fl_alert("%s", err.c_str());
-      return false;
-    }
-  }
-
   if (unlink(file.c_str()) == -1) {
     std::string err = (lang.compare(0, 2, "en") == 0 ?
         "Password cannot be deleted" :
@@ -69,7 +46,7 @@ bool Delpass::exec(const std::string &file, bool force) {
   }
 
   // 空のディレクトリの場合
-  std::vector<std::string> tokens = explode(file, '/');
+  std::vector<std::string> tokens = Common::explode(file, '/');
   std::string passpath = basedir + tokens[0];
 
   for (size_t i = 1; i < tokens.size(); ++i) {
@@ -101,4 +78,70 @@ bool Delpass::exec(const std::string &file, bool force) {
       "パスワードを削除しました");
   fl_alert("%s", msg.c_str());
   return true;
+}
+
+void Delpass::delete_cb(Fl_Widget *, void *data) {
+  InputData *inputs = (InputData *)data;
+
+  if (inputs) {
+    file = inputs->txtin->value();
+  }
+
+  exec(file, false);
+  std::vector<std::string> fpaths;
+  std::string rdir = Common::getbasedir(false);
+
+  std::string mockpath = "";
+  clearpaths(true, mockpath);
+  scandir(rdir, rdir, fpaths);
+  updatelist();
+}
+
+void Delpass::dialog_cb(Fl_Widget *w, void *data) {
+  (void)w;
+  (void)data;
+  std::string lang = Common::getlang();
+
+  Fl_Input *txtin = new Fl_Input(150, 20, 180, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Path:" : "パス:"));
+  txtin->hide();
+  txtin->value(del.getFile().c_str());
+
+  InputData *inputs = new InputData();
+  inputs->txtin = txtin;
+
+  std::string asking =
+    (lang.compare(0, 2, "en") == 0 ?
+    "Are you sure you want to delete the password '" + del.getFile() + "'?" :
+    "パスワード「" + del.getFile() + "」を本当に削除する事が宜しいでしょうか？");
+  int confirm = fl_choice("%s",
+    (lang.compare(0, 2, "en") == 0 ? "Cancel" : "キャンセル"),
+    (lang.compare(0, 2, "en") == 0 ? "Delete" : "削除"),
+    nullptr, asking.c_str());
+
+  if (confirm == 0) {
+    std::string err = (lang.compare(0, 2, "en") == 0 ?
+        "Not deleted" :
+        "削除しませんでした");
+    fl_alert("%s", err.c_str());
+  } else {
+    static_ok_cb(w, inputs);
+  }
+}
+
+void Delpass::static_ok_cb(Fl_Widget *w, void *data) {
+  (void)w;
+  InputData *inputs = (InputData *)data;
+
+  del.delete_cb(nullptr, inputs);
+  std::vector<std::string> fpaths;
+  std::string rdir = Common::getbasedir(false);
+  std::string curpath = "";
+  clearpaths(true, curpath);
+  scandir(rdir, rdir, fpaths);
+  updatelist();
+}
+
+void Delpass::static_cancel_cb(Fl_Widget *w, void *data) {
+  ((Delpass *)data)->cancel_cb(w, data);
 }

@@ -1,5 +1,6 @@
 #include "common.hh"
 #include "addpass.hh"
+#include "../main.hh"
 
 #include <gpgme++/context.h>
 #include <gpgme++/data.h>
@@ -12,6 +13,8 @@
 #include <fstream>
 
 #include <unistd.h>
+
+Addpass add;
 
 struct InputData {
   Fl_Input *txtin;
@@ -289,13 +292,16 @@ void Addpass::static_ok_cb(Fl_Widget *w, void *data) {
   (void)w;
   InputData *inputs = (InputData *)data;
 
-  Addpass add;
   add.add_cb(nullptr, inputs);
+  std::vector<std::string> fpaths;
+  std::string rdir = Common::getbasedir(false);
+  std::string curpath = rdir + "/" + inputs->txtin->value() + ".gpg";
+  clearpaths(false, curpath);
+  scandir(rdir, rdir, fpaths);
+  updatelist();
+  browse(curpath, true);
 }
 
 void Addpass::static_cancel_cb(Fl_Widget *w, void *data) {
-  (void)w;
-  Fl_Window *dialog = (Fl_Window *)data;
-  dialog->hide();
-  delete dialog;
+  ((Addpass *)data)->cancel_cb(w, data);
 }
