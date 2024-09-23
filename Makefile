@@ -71,8 +71,8 @@ LDFLAGS += -lstdc++ -lpthread -lm -lc -lXft -lxcb -lfontconfig -lfreetype\
 			 -lexpat -lz -lbz2 -lgcc -lassuan -lintl
 .elif ${OS} == "linux"
 LDFLAGS += -lstdc++ -lgcc -lc -lXft -lXext -lXrender -lfontconfig -lXinerama\
-			 -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp -lbz2\
-			 -lbrotlidec -lbrotlicommon
+			 -lxcb -lfreetype -lpng16 -lz -lexpat -lXau -lXdmcp -lbz2\
+			 -lbrotlidec -lbrotlicommon -lassuan
 .endif
 
 all:
