@@ -1,6 +1,6 @@
 #include "src/addpass.hh"
 #include "src/delpass.hh"
-/* #include "src/editpass.hh" */
+#include "src/editpass.hh"
 #include "src/genpass.hh"
 #include "src/initpass.hh"
 #include "src/showpass.hh"
@@ -24,6 +24,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include <iostream> // REMOVE
 #include <string>
 #include <vector>
 
@@ -34,7 +35,7 @@ Fl_Input *searchfield = nullptr;
 
 Addpass a;
 Delpass d;
-/* Editpass e; */
+Editpass e;
 Genpass g;
 Initpass i;
 Showpass s;
@@ -62,7 +63,7 @@ void updatelist() {
 
 void search_cb(Fl_Widget *, void *) {
   d.btn->deactivate();
-  /* e.btn->deactivate(); */
+  e.btn->deactivate();
   updatelist();
 }
 
@@ -83,8 +84,9 @@ void browser_cb(Fl_Widget *w, void *) {
 
   if (!cont.empty()) {
     textbuf->text(cont.c_str());
+    Editpass::setFile(path);
     d.btn->activate();
-    /* e.btn->activate(); */
+    e.btn->activate();
   }
 }
 
@@ -128,7 +130,7 @@ void delete_cb(Fl_Widget *, void *) {
   int res = d.exec(path, false);
   if (res == 0) {
     d.btn->deactivate();
-    /* e.btn->deactivate(); */
+    e.btn->deactivate();
     std::vector<std::string> fpaths;
     std::string rdir = Common::getbasedir(false);
 
@@ -139,17 +141,18 @@ void delete_cb(Fl_Widget *, void *) {
   }
 }
 
-void init_cb(Fl_Widget *w, void *user_data) {
+void init_cb(Fl_Widget *w, void *data) {
   i.exec(i.gpgid->value());
   i.btn->deactivate();
-  ((Initpass *)user_data)->cancel_cb(w, user_data);
+  ((Initpass *)data)->cancel_cb(w, data);
 }
 
 void init_dialog_cb(Fl_Widget *w, void *) {
   (void)w;
   std::string lang = Common::getlang();
   Fl_Window *dialog = new Fl_Window(450, 120,
-      (lang.compare(0, 2, "en") == 0 ? "Initialize password" : "パスワードの初期設定"));
+      (lang.compare(0, 2, "en") == 0 ?
+       "Initialize password" : "パスワードの初期設定"));
 
   i.gpgid = new Fl_Input(90, 20, 300, 30,
       (lang.compare(0, 2, "en") == 0 ? "GPG secret key:" : "gpg秘密鍵:"));
@@ -206,10 +209,10 @@ int main(int argc, char **argv) {
   d.btn->deactivate();
   d.btn->callback(delete_cb);
 
-  /* e.btn = new Fl_Button(400, 560, 150, 30,( */
-  /* (lang.compare(0, 2, "en") == 0 ? "Edit password" : "パスワードの編集")); */
-  /* e.btn->deactivate(); */
-  /* e.btn->callback(e.dialog_cb); */
+  e.btn = new Fl_Button(400, 560, 150, 30,
+    (lang.compare(0, 2, "en") == 0 ? "Edit password" : "パスワードの編集"));
+  e.btn->deactivate();
+  e.btn->callback(e.dialog_cb);
 
   g.btn = new Fl_Button(10, 640, 150, 30,
       (lang.compare(0, 2, "en") == 0 ? "Generate password" : "パスワードの作成"));

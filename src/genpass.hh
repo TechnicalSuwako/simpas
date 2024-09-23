@@ -18,7 +18,7 @@ class Genpass : public Dialog {
 
     std::string exec(int count, bool issecure);
     static void dialog_cb(Fl_Widget *w, void *);
-    static void generate_cb(Fl_Widget *, void *user_data);
+    static void generate_cb(Fl_Widget *, void *data);
 
   private:
     Fl_Input *counter = nullptr;

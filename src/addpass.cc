@@ -19,14 +19,13 @@ struct InputData {
   Fl_Secret_Input *pass2;
 };
 
-bool Addpass::exec(const std::string &file,
-    const std::string &pass, const std::string &verify_pass) {
+bool Addpass::exec(const std::string &file, const std::string &pass, bool isEdit) {
   std::string lang = Common::getlang();
 
   std::string basedir = Common::getbasedir(true);
   std::string ext = ".gpg";
 
-  std::string gpgoutfile = basedir + file + ext;
+  std::string gpgoutfile = (isEdit ? file : basedir + file + ext);
 
   if (access(gpgoutfile.c_str(), F_OK) != -1) {
     std::string err = (lang.compare(0, 2, "en") == 0 ?
@@ -120,7 +119,7 @@ bool Addpass::exec(const std::string &file,
     }
 
     // ディレクトリを創作
-    std::string dirpath = basedir + file;
+    std::string dirpath = (isEdit ? file : basedir + file);
     auto lastsla = dirpath.find_last_of('/');
     if (lastsla != std::string::npos) {
       dirpath = dirpath.substr(0, lastsla);
@@ -147,7 +146,7 @@ bool Addpass::exec(const std::string &file,
       return false;
     }
 
-  // データが保存したかどうか確認
+    // データが保存したかどうか確認
     ssize_t encrypted_data_size = out.seek(0, SEEK_END);
     if (encrypted_data_size <= 0) {
       std::string ero = (lang.compare(0, 2, "en") == 0 ?
@@ -183,6 +182,8 @@ bool Addpass::exec(const std::string &file,
     return false;
   }
 
+  if (isEdit) return true;
+
   std::string msg = (lang.compare(0, 2, "en") == 0 ?
       "The password got saved." :
       "パスワードを保存出来ました");
@@ -191,8 +192,8 @@ bool Addpass::exec(const std::string &file,
   return true;
 }
 
-void Addpass::add_cb(Fl_Widget *, void *user_data) {
-  InputData *inputs = (InputData *)user_data;
+void Addpass::add_cb(Fl_Widget *, void *data) {
+  InputData *inputs = (InputData *)data;
   std::string lang = Common::getlang();
 
   if (inputs) {
@@ -233,7 +234,7 @@ void Addpass::add_cb(Fl_Widget *, void *user_data) {
       return;
     }
 
-    exec(file, inputpass1, inputpass2);
+    exec(file, inputpass1, false);
   } else {
     std::string err =
       (lang.compare(0, 2, "en") == 0 ?
@@ -281,6 +282,7 @@ void Addpass::dialog_cb(Fl_Widget *w, void *) {
 }
 
 void Addpass::static_ok_cb(Fl_Widget *w, void *data) {
+  (void)w;
   InputData *inputs = (InputData *)data;
 
   Addpass add;
@@ -288,6 +290,7 @@ void Addpass::static_ok_cb(Fl_Widget *w, void *data) {
 }
 
 void Addpass::static_cancel_cb(Fl_Widget *w, void *data) {
+  (void)w;
   Fl_Window *dialog = (Fl_Window *)data;
   dialog->hide();
   delete dialog;
