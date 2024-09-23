@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <fstream>
 #include <iostream>
 #include <errno.h>
 
@@ -59,4 +60,9 @@ int Common::mkdir_r(const std::string &path, mode_t mode) {
   }
 
   return 0;
+}
+
+void Common::tmpcopy(const std::string &inpath, const std::string &outpath) {
+  std::ifstream src(inpath, std::ios::binary);
+  std::ofstream dst(outpath, std::ios::binary);
 }

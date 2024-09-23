@@ -6,6 +6,8 @@
 #include <FL/Fl_Window.H>
 #include <FL/fl_ask.H>
 
+#include <unistd.h>
+
 Editpass edit;
 
 struct InputData {
@@ -25,6 +27,9 @@ std::string Editpass::getFile() {
 bool Editpass::exec(const std::string &file, const std::string &pass) {
   std::string lang = Common::getlang();
 
+  Common c;
+  c.tmpcopy(file, "/tmp/simpas-tmp.gpg");
+
   Delpass d;
   bool isdel = d.exec(file, true);
   if (!isdel) {
@@ -40,12 +45,15 @@ bool Editpass::exec(const std::string &file, const std::string &pass) {
     std::string err =
       (lang.compare(0, 2, "en") == 0 ? "Failed to edit." : "編集に失敗。");
     fl_alert("%s", err.c_str());
+    c.tmpcopy("/tmp/simpas-tmp.gpg", file);
+    unlink("/tmp/simpas-tmp.gpg");
     return false;
   }
 
   std::string msg =
     (lang.compare(0, 2, "en") == 0 ? "Edit success." : "編集に成功。");
   fl_alert("%s", msg.c_str());
+  unlink("/tmp/simpas-tmp.gpg");
 
   return true;
 }
