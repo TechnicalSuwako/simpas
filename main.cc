@@ -4,6 +4,7 @@
 #include "src/genpass.hh"
 #include "src/initpass.hh"
 #include "src/showpass.hh"
+#include "src/vulnpass.hh"
 #include "src/common.hh"
 #include "main.hh"
 
@@ -39,11 +40,12 @@ Editpass e;
 Genpass g;
 Initpass i;
 Showpass s;
+Vulnpass v;
 
 const char *sofname = "simpas";
 const char *intname = "SimPas";
-const char *version = "1.0.0";
-const char *basedof = "sp-1.4.0";
+const char *version = "1.1.0";
+const char *basedof = "sp-1.5.0";
 
 std::vector<std::string> fullpaths;
 std::vector<std::string> dispaths;
@@ -51,7 +53,7 @@ std::vector<std::string> filterpaths;
 int browseId;
 
 void browse(std::string &path, bool isNew) {
-  std::string cont = s.exec(path.c_str());
+  std::string cont = s.exec(path.c_str(), false);
   if (isNew) browseId = browser->size();
   browser->value(browseId);
 
@@ -228,6 +230,10 @@ int main(int argc, char **argv) {
       (lang.compare(0, 2, "en") == 0 ?
        "Initialize password" :
        "パスワードの初期設定"));
+
+  v.btn = new Fl_Button(170, 560, 150, 30,
+      (lang.compare(0, 2, "en") == 0 ? "Check for breach" : "漏洩されたかの確認"));
+  v.btn->callback(v.dialog_cb);
 
   std::string gpgidpath = Common::getbasedir(true) + ".gpg-id";
 
