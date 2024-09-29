@@ -55,7 +55,7 @@ std::vector<unsigned char> Otppass::extract_secret(const std::string &otpauth_ur
   return secret_decoded;
 }
 
-#if defined(__HAIKU__)
+#if defined(__HAIKU__) || defined(__linux)
 uint64_t Otppass::htobe64(uint64_t counter) {
   uint64_t res = 0;
   uint8_t *dest = reinterpret_cast<uint8_t*>(&res);
