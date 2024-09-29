@@ -8,7 +8,7 @@
 
 class Showpass {
   public:
-    std::string exec(const char *file);
+    std::string exec(const char *file, bool stfu);
 
   private:
     void clean_up(GpgME::Context &ctx, GpgME::Data &in, GpgME::Data &out,
