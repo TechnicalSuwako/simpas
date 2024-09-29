@@ -12,8 +12,8 @@ doas make install
 
 ### Void Linux
 ```sh
-sudo make depends
-make
+sudo bmake depends
+bmake
 sudo bmake install
 ```
 
