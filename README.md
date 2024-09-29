@@ -1,5 +1,5 @@
 # simpas
-シンプルなパスワードマネージャー Simple Password Manager
+シンプルなパスワードマネージャー Simple Password Manager\
 GUI版のsp
 
 ## インストールする方法 | Installation
