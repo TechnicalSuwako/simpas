@@ -155,6 +155,7 @@ void Vulnpass::showRes() {
 
   Fl_Button *okBtn = new Fl_Button(210, 400, 80, 30, "OK");
   okBtn->callback([](Fl_Widget *widget, void *win) {
+    (void)widget;
     reinterpret_cast<Fl_Window*>(win)->hide();
   }, win);
 

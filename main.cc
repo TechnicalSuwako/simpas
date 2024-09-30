@@ -5,6 +5,7 @@
 #include "src/initpass.hh"
 #include "src/showpass.hh"
 #include "src/vulnpass.hh"
+#include "src/chkpass.hh"
 #include "src/common.hh"
 #include "main.hh"
 
@@ -35,6 +36,7 @@ Fl_Text_Buffer *textbuf = nullptr;
 Fl_Input *searchfield = nullptr;
 
 Addpass a;
+Chkpass c;
 Delpass d;
 Editpass e;
 Genpass g;
@@ -231,9 +233,14 @@ int main(int argc, char **argv) {
        "Initialize password" :
        "パスワードの初期設定"));
 
-  v.btn = new Fl_Button(170, 560, 150, 30,
+  v.btn = new Fl_Button(170, 560, 200, 30,
       (lang.compare(0, 2, "en") == 0 ? "Check for breach" : "漏洩されたかの確認"));
   v.btn->callback(v.dialog_cb);
+
+  c.btn = new Fl_Button(170, 600, 200, 30,
+      (lang.compare(0, 2, "en") == 0 ?
+       "Check for unsafe passwords" : "不安定的なパスワードの確認"));
+  c.btn->callback(c.dialog_cb);
 
   std::string gpgidpath = Common::getbasedir(true) + ".gpg-id";
 
