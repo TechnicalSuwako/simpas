@@ -76,7 +76,7 @@ void Chkpass::charPass(const std::string &path, const std::string &pass,
         "The password \"" + path + "\" is too weak! A strong password contains " + 
           "at least 1 uppercase, 1 lowercase, 1 digit, and 1 special character." :
         "パスワード「" + path + "」は弱すぎます！強いパスワードは最大1大文字、" + 
-          "1小文字、1数字、及び1特別な文字が含みます。");
+          "1小文字、1数字、及び1記号の文字が含みます。");
 
     foundRes.push_back(res);
     weakcharcount++;
