@@ -19,6 +19,7 @@
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Secret_Input.H>
 #include <FL/Fl_Hold_Browser.H>
@@ -34,6 +35,8 @@ Fl_Select_Browser *browser = nullptr;
 Fl_Text_Display *textview = nullptr;
 Fl_Text_Buffer *textbuf = nullptr;
 Fl_Input *searchfield = nullptr;
+Fl_Check_Button *hidechk = nullptr;
+Fl_Button *showbtn = nullptr;
 
 Addpass a;
 Chkpass c;
@@ -53,18 +56,59 @@ std::vector<std::string> fullpaths;
 std::vector<std::string> dispaths;
 std::vector<std::string> filterpaths;
 int browseId;
+bool isPassHidden = true;
+std::string realpass = "";
 
 void browse(std::string &path, bool isNew) {
   std::string cont = s.exec(path.c_str(), false);
+  realpass = cont;
+
   if (isNew) browseId = browser->size();
   browser->value(browseId);
 
   if (!cont.empty()) {
-    textbuf->text(cont.c_str());
+    if (isPassHidden) {
+      std::string lang = Common::getlang();
+      if (lang.compare(0, 2, "en") == 0) {
+        textbuf->text("(Hidden, please click the \"show\" button to reveal)");
+      } else {
+        textbuf->text("（非表示、「表示」ボタンをクリックして確認して下さい）");
+      }
+      showbtn->activate();
+      showbtn->label((Common::getlang().compare(0, 2, "en") == 0) ?
+          "Show password" : "パスワードの表示");
+    } else {
+      textbuf->text(cont.c_str());
+      showbtn->label((Common::getlang().compare(0, 2, "en") == 0) ?
+          "Hide password" : "パスワードを隠す");
+      showbtn->activate();}
     Editpass::setFile(path);
     Delpass::setFile(path);
     d.btn->activate();
     e.btn->activate();
+  }
+}
+
+void hide_cb(Fl_Widget *w, void *) {
+  isPassHidden = ((Fl_Check_Button *)w)->value();
+  int idx = browser->value();
+
+  if (isPassHidden && idx > 0) {
+    showbtn->activate();
+    showbtn->label((Common::getlang().compare(0, 2, "en") == 0) ?
+        "Show password" : "パスワードの表示");
+  } else {
+    showbtn->deactivate();
+    showbtn->label((Common::getlang().compare(0, 2, "en") == 0) ?
+        "Hide password" : "パスワードを隠す");
+  }
+
+  showbtn->label((Common::getlang().compare(0, 2, "en") == 0) ?
+      "Show password" : "パスワードの表示");
+
+  if (idx > 0) {
+    std::string path = filterpaths[idx - 1];
+    browse(path, false);
   }
 }
 
@@ -103,9 +147,10 @@ void search_cb(Fl_Widget *, void *) {
 }
 
 void copy_cb(Fl_Widget *, void *) {
-  const char *text = textbuf->text();
-  if (text && *text) {
-    Fl::copy(text, strlen(text), 1, Fl::clipboard_plain_text);
+  if (!realpass.empty()) {
+    Fl::copy(realpass.c_str(), realpass.length(), 1, Fl::clipboard_plain_text);
+  } else {
+    Fl::copy("", 0, 1, Fl::clipboard_plain_text);
   }
 }
 
@@ -117,6 +162,36 @@ void browser_cb(Fl_Widget *w, void *) {
 
   std::string path = filterpaths[idx - 1];
   browse(path, false);
+}
+
+void show_cb(Fl_Widget *, void *) {
+  int idx = browser->value();
+  if (idx == 0) return;
+  std::string path = filterpaths[idx - 1];
+
+  if (isPassHidden) {
+    std::string cont = s.exec(path.c_str(), false);
+    realpass = cont;
+    textbuf->text(cont.c_str());
+
+    std::string lang = Common::getlang();
+    if (lang.compare(0, 2, "en") == 0) {
+      showbtn->label("Hide password");
+    } else {
+      showbtn->label("パスワードを隠す");
+    }
+    isPassHidden = false;
+  } else {
+    std::string lang = Common::getlang();
+    if (lang.compare(0, 2, "en") == 0) {
+      textbuf->text("(Hidden, please click the \"show\" button to reveal)");
+      showbtn->label("Show password");
+    } else {
+      textbuf->text("（非表示、「表示」ボタンをクリックして確認して下さい）");
+      showbtn->label("パスワードの表示");
+    }
+    isPassHidden = true;
+  }
 }
 
 void scandir(const std::string &dpath, const std::string &rpath,
@@ -223,6 +298,16 @@ int main(int argc, char **argv) {
     (lang.compare(0, 2, "en") == 0 ? "Edit password" : "パスワードの編集"));
   e.btn->deactivate();
   e.btn->callback(e.dialog_cb);
+
+  hidechk = new Fl_Check_Button(560, 560, 150, 30,
+    (lang.compare(0, 2, "en") == 0 ? "Hide password" : "パスワードを隠す"));
+  hidechk->set();
+  hidechk->callback(hide_cb);
+
+  showbtn = new Fl_Button(560, 600, 150, 30,
+    (lang.compare(0, 2, "en") == 0 ? "Show password" : "パスワードの表示"));
+  showbtn->deactivate();
+  showbtn->callback(show_cb);
 
   g.btn = new Fl_Button(10, 640, 150, 30,
       (lang.compare(0, 2, "en") == 0 ? "Generate password" : "パスワードの作成"));
