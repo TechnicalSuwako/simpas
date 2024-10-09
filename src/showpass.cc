@@ -1,11 +1,33 @@
 #include "common.hh"
 #include "showpass.hh"
+#include "../main.hh"
 #include "otppass.hh"
 
 #include <gpgme++/decryptionresult.h>
 
+#undef Status
 #undef None
+#include <FL/Fl.H>
 #include <FL/fl_ask.H>
+#include <FL/Fl_Text_Buffer.H>
+#include <FL/Fl_Text_Display.H>
+
+void Showpass::otpupdate_cb(void *o) {
+  Showpass *show = static_cast<Showpass *>(o);
+  Otppass otp;
+
+  if (!show->otpSav.empty()) {
+    std::string dec = otp.exec(show->otpSav);
+
+    realpass = dec;
+    if (!isPassHidden) {
+      textbuf->text(dec.c_str());
+      textview->redraw();
+    }
+  }
+
+  Fl::repeat_timeout(1.0, otpupdate_cb, o);
+}
 
 std::string Showpass::exec(const char *file, bool stfu) {
   std::string lang = Common::getlang();
@@ -84,9 +106,16 @@ std::string Showpass::exec(const char *file, bool stfu) {
 
     if (dec.rfind("otpauth://", 0) == 0 && !stfu) {
       Otppass o;
+      otpSav = dec;
+
+      Fl::remove_timeout(otpupdate_cb, this);
+      Fl::add_timeout(1.0, otpupdate_cb, this);
+
       return o.exec(dec);
     }
 
+    Fl::remove_timeout(otpupdate_cb, this);
+    otpSav = "";
     return dec;
   } catch (const std::exception &e) {
     if (!stfu) {

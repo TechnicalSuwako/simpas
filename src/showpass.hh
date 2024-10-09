@@ -8,6 +8,9 @@
 
 class Showpass {
   public:
+    std::string otpSav = "";
+
+    static void otpupdate_cb(void *o);
     std::string exec(const char *file, bool stfu);
 
   private:
