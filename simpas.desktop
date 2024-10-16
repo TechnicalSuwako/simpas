@@ -1,7 +1,12 @@
 [Desktop Entry]
 Type=Application
-Name=simpas
+Name=SimPas
 GenericName=Simple Password Manager
 GenericName[ja]=シンプルなパスワードマネージャー
 Exec=simpas %F
-Icon=simpas
+Icon=/usr/local/share/icons/076/512x512/simpas
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Application;Utility;System;Security;DeskopUtility;
+Keywords=password;password manager;security;otp;password generator;

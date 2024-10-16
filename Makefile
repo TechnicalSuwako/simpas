@@ -54,12 +54,12 @@ CFLAGS += -I/usr/X11R7/include -L/usr/X11R7/lib -I/usr/pkg/include -L/usr/pkg/li
 CFLAGS += -I/usr/X11R6/include -L/usr/X11R6/lib
 .endif
 
-LDFLAGS = -lfltk -lX11 -lassuan -lgpgmepp -lgpgme -lcrypto -lgpg-error
+LDFLAGS = -lfltk_images -lfltk -lX11 -lassuan -lgpgmepp -lgpgme -lcrypto -lgpg-error
 
 .if ${OS} == "openbsd"
 LDFLAGS += -lc++abi -lpthread -lm -lc\
 			 -lXcursor -lXfixes -lXext -lXft -lfontconfig -lXinerama -lXdmcp -lXau\
-			 -lz -lxcb -lXrender -lexpat -lfreetype -lc++ -lintl -liconv
+			 -lz -lxcb -lXrender -lexpat -lfreetype -lc++ -lintl -liconv -lpng -ljpeg
 .elif ${OS} == "freebsd"
 LDFLAGS += -lcxxrt -lm -lXrender -lXcursor -lXfixes -lXext -lXft -lfontconfig\
 			 -lXinerama -lthr -lz -lxcb -lfreetype -lexpat -lXau -lXdmcp\
@@ -91,8 +91,8 @@ clean:
 
 dist:
 	mkdir -p ${NAME}-${VERSION} release/src release/desktop
-	cp -R LICENSE.txt Makefile README.md CHANGELOG.md\
-		main.cc src ${NAME}.desktop ${NAME}-${VERSION}
+	cp -R LICENSE.txt Makefile README.md CHANGELOG.md logo.png\
+		main.cc src icons ${NAME}.desktop ${NAME}-${VERSION}
 	tar zcfv release/src/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	cp ${NAME}.desktop release/desktop
 	rm -rf ${NAME}-${VERSION}
@@ -107,11 +107,16 @@ publish:
 	rsync -rtvzP release/bin/${VERSION} 192.168.0.143:/zroot/repo/bin/${NAME}
 	rsync -rtvzP release/src/* 192.168.0.143:/zroot/repo/src/${NAME}
 	rsync -rtvzP release/desktop/* 192.168.0.143:/zroot/repo/desktop
+	rsync -rtvzP release/icons/* 192.168.0.143:/zroot/repo/icons
 
 install:
 	mkdir -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${PREFIX}/share/applications
 	cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
 	cp -f ${NAME}.desktop ${DESTDIR}${PREFIX}/share/applications
+.if ${OS} == "linux"
+	sed -i 's/\/local//' ${DESTDIR}${PREFIX}/share/applications/${NAME}.desktop
+.endif
+	cp -rf icons/076 ${DESTDIR}${PREFIX}/share/icons
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
 
 uninstall:

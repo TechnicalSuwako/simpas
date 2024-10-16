@@ -24,6 +24,7 @@
 #include <FL/Fl_Secret_Input.H>
 #include <FL/Fl_Hold_Browser.H>
 #include <FL/Fl_Copy_Surface.H>
+#include <FL/Fl_PNG_Image.H>
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -267,6 +268,16 @@ int main(int argc, char **argv) {
   Fl_Window *window = new Fl_Window(790, 740, windowtit.c_str());
 
   set_dark_theme();
+
+#if defined(__linux)
+  const char *iconPath = "/usr/share/icons/076/512x512/simpas.png";
+#else
+  const char *iconPath = "/usr/local/share/icons/076/512x512/simpas.png";
+#endif
+
+  Fl_PNG_Image *icon = new Fl_PNG_Image(iconPath);
+
+  window->icon(icon);
 
   searchfield = new Fl_Input(
       (lang.compare(0, 2, "en") == 0 ? 70 : 50), 10,
