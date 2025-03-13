@@ -50,8 +50,8 @@ Vulnpass v;
 
 const char *sofname = "simpas";
 const char *intname = "SimPas";
-const char *version = "1.1.0";
-const char *basedof = "sp-1.5.0";
+const char *version = "1.1.1";
+const char *basedof = "sp-1.5.1";
 
 std::vector<std::string> fullpaths;
 std::vector<std::string> dispaths;

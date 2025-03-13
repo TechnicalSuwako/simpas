@@ -92,7 +92,7 @@ clean:
 dist:
 	mkdir -p ${NAME}-${VERSION} release/src release/desktop
 	cp -R LICENSE.txt Makefile README.md CHANGELOG.md logo.png\
-		main.cc src icons ${NAME}.desktop ${NAME}-${VERSION}
+		main.* src icons ${NAME}.desktop ${NAME}-${VERSION}
 	tar zcfv release/src/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION}
 	cp ${NAME}.desktop release/desktop
 	rm -rf ${NAME}-${VERSION}

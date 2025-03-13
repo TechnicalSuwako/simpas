@@ -1,6 +1,7 @@
 #include "base32.hh"
 
 #include <algorithm>
+#include <cctype>
 #include <cstddef>
 #include <iterator>
 #include <stdexcept>
@@ -13,9 +14,14 @@ int Base32::char_to_val(char c) {
 }
 
 std::vector<unsigned char> Base32::decode(const std::string &encoded) {
-  size_t encoded_len = encoded.length();
+  std::string encoded_up = encoded;
+  for (auto &c : encoded_up) {
+    c = std::toupper(static_cast<unsigned char>(c));
+  }
+
+  size_t encoded_len = encoded_up.length();
   size_t padding = 0;
-  for (int i = encoded_len - 1; i >= 0 && encoded[i] == '='; --i) {
+  for (int i = encoded_len - 1; i >= 0 && encoded_up[i] == '='; --i) {
     ++padding;
   }
 
@@ -27,7 +33,7 @@ std::vector<unsigned char> Base32::decode(const std::string &encoded) {
   int buffer = 0, bits_left = 0, count = 0;
   Base32 b32;
   for (size_t i = 0; i < encoded_len - padding; ++i) {
-    int val = b32.char_to_val(encoded[i]);
+    int val = b32.char_to_val(encoded_up[i]);
     if (val < 0) {
       throw std::runtime_error("Base32エンコードした文字の中に不正な文字があります。");
     }
